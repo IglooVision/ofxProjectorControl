@@ -1,0 +1,5 @@
+﻿Versions
+
+v0.10
+-----
+* Basic interaction with Vivitek DU978-WT using RC232 protocol over ethernet. 3D activation, 3D mode selection, 3D sync invert and close projector options. 

@@ -1,0 +1,21 @@
+<settings>
+    <communicationMode>RC232OverEthernet</communicationMode>
+	<port>23</port>
+	<projectors>
+		<projector>
+			<IP>192.168.0.104</IP>
+		</projector>
+		<projector>
+			<IP>192.168.0.105</IP>
+		</projector>
+		<projector>
+			<IP>192.168.0.106</IP>
+		</projector>
+		<projector>
+			<IP>192.168.0.107</IP>
+		</projector>
+		<projector>
+			<IP>192.168.0.108</IP>
+		</projector>
+	</projectors>
+</settings>
