@@ -4,11 +4,26 @@
 void ofApp::setup()
 {
 	projectControl.setupConnection();	
+
+	receiver.setup(PORT);
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
+	while (receiver.hasWaitingMessages())
+	{
+		ofxOscMessage m;
+		receiver.getNextMessage(&m);
+		string oscMsgAddress = m.getAddress();
+		string oscMsgFromIP = m.getRemoteIp();
 
+
+
+		if (ofIsStringInString(oscMsgAddress, "/projector/")) 
+		{
+			projectControl.handleOSCMessage(m);
+		}
+	}
 }
 
 //--------------------------------------------------------------
@@ -38,39 +53,39 @@ void ofApp::keyReleased(int key){
 		
 	if (key == 'q')
 	{
-		projectControl.projector3DActivate(0);
+		projectControl.projector3DActivate(ofxProjectorControl::EMITTER_3D_OFF);
 	}
 	if (key == 'w')
 	{
-		projectControl.projector3DActivate(1);
+		projectControl.projector3DActivate(ofxProjectorControl::EMITTER_DLP_LINK);
 	}
 	if (key == 'e')
 	{
-		projectControl.projector3DActivate(2);
+		projectControl.projector3DActivate(ofxProjectorControl::EMITTER_IR);
 	}
 	if (key == 'a')
 	{
-		projectControl.projector3DMode(0);
+		projectControl.projector3DMode(ofxProjectorControl::MODE_FRAME_SEQUENTIAL);
 	}
 	if (key == 's')
 	{
-		projectControl.projector3DMode(1);
+		projectControl.projector3DMode(ofxProjectorControl::MODE_TOP_BOTTOM);
 	}
 	if (key == 'd')
 	{
-		projectControl.projector3DMode(2);
+		projectControl.projector3DMode(ofxProjectorControl::MODE_SIDE_BY_SIDE);
 	}
 	if (key == 'f')
 	{
-		projectControl.projector3DMode(3);
+		projectControl.projector3DMode(ofxProjectorControl::MODE_FRAME_PACKING);
 	}
 	if (key == 'z')
 	{
-		projectControl.projector3DSyncIvenrt(0);
+		projectControl.projector3DSyncIvenrt(ofxProjectorControl::SYNC_INVERT_OFF);
 	}
 	if (key == 'x')
 	{
-		projectControl.projector3DSyncIvenrt(1);
+		projectControl.projector3DSyncIvenrt(ofxProjectorControl::SYNC_INVERT_ON);
 	}
 	if (key == 'v')
 	{

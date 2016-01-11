@@ -2,12 +2,33 @@
 
 #include "ofxNetwork.h"
 #include "ofxXmlSettings.h"
+#include "ofxOSC.h"
 
 using namespace std;
 
 class ofxProjectorControl
 {
+
 	public:
+
+		enum EmitterSettings {
+			EMITTER_3D_OFF,
+			EMITTER_DLP_LINK,
+			EMITTER_IR
+		};
+
+		enum ModeSettings {
+			MODE_FRAME_SEQUENTIAL,
+			MODE_TOP_BOTTOM,
+			MODE_SIDE_BY_SIDE,
+			MODE_FRAME_PACKING
+		};
+
+		enum SyncInvert {
+			SYNC_INVERT_OFF,
+			SYNC_INVERT_ON
+		};
+
 		ofxProjectorControl();
 		~ofxProjectorControl();
 
@@ -22,7 +43,7 @@ class ofxProjectorControl
 		void projector3DActivate(int emitter);
 		
 		//Sets 3D mode 
-		//Parameters: 0:Off 1:DLP - Link 2 : IR
+		//Parameters: 0:Frame Sequential 1:Top/Bottom 2 : Side-By-Side 3: Frame Packing
 		//This is for Vivitek DU978-WT. It should get abstracted
 		void projector3DMode(int mode);
 
@@ -37,6 +58,9 @@ class ofxProjectorControl
 
 		//Loads the XML settings from ProjectorSettings.xml
 		void loadXmlSettings(string path);
+
+		//A simple interface for Osc Messages
+		void handleOSCMessage(ofxOscMessage msg);
 	
 	private:
 		//Sets up the connections by directly connecting to the projector

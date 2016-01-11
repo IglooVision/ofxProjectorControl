@@ -4,6 +4,8 @@
 #include "ofxNetwork.h"
 #include "ofxProjectorControl.h"
 
+#define PORT 9001
+
 class ofApp : public ofBaseApp{
 	public:
 		void setup();
@@ -24,4 +26,5 @@ class ofApp : public ofBaseApp{
 
 		ofxTCPClient tcpClient;
 		ofxProjectorControl projectControl;
+		ofxOscReceiver receiver;
 };

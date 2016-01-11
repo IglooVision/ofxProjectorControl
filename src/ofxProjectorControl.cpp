@@ -123,3 +123,19 @@ void ofxProjectorControl::loadXmlSettings(string path)
 	}
 		
 }
+
+void ofxProjectorControl::handleOSCMessage(ofxOscMessage msg)
+{
+	string oscMsgAddress = msg.getAddress();
+
+	if (oscMsgAddress == "/projector/3DOff")				{ projector3DActivate(ofxProjectorControl::EMITTER_3D_OFF); }
+	else if (oscMsgAddress == "/projector/DLP")				{ projector3DActivate(ofxProjectorControl::EMITTER_DLP_LINK); }
+	else if (oscMsgAddress == "/projector/IR")				{ projector3DActivate(ofxProjectorControl::EMITTER_IR); }
+	else if (oscMsgAddress == "/projector/FrameSequential")	{ projector3DMode(ofxProjectorControl::MODE_FRAME_SEQUENTIAL); }
+	else if (oscMsgAddress == "/projector/TopBottom")		{ projector3DMode(ofxProjectorControl::MODE_TOP_BOTTOM); }
+	else if (oscMsgAddress == "/projector/SBS")				{ projector3DMode(ofxProjectorControl::MODE_SIDE_BY_SIDE); }
+	else if (oscMsgAddress == "/projector/FramePacking")	{ projector3DMode(ofxProjectorControl::MODE_FRAME_PACKING); }
+	else if (oscMsgAddress == "/projector/InvertOff")		{ projector3DSyncIvenrt(ofxProjectorControl::SYNC_INVERT_OFF); }
+	else if (oscMsgAddress == "/projector/InvertOn")		{ projector3DSyncIvenrt(ofxProjectorControl::SYNC_INVERT_ON); }
+	else if (oscMsgAddress == "/projector/Close")			{ projectorClose(); }
+}
