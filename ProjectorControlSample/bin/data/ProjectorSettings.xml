@@ -3,19 +3,19 @@
 	<port>23</port>
 	<projectors>
 		<projector>
-			<IP>192.168.0.104</IP>
+			<IP>192.168.1.100</IP>
 		</projector>
 		<projector>
-			<IP>192.168.0.105</IP>
+			<IP>192.168.1.101</IP>
 		</projector>
 		<projector>
-			<IP>192.168.0.106</IP>
+			<IP>192.168.1.102</IP>
 		</projector>
 		<projector>
-			<IP>192.168.0.107</IP>
+			<IP>192.168.1.103</IP>
 		</projector>
 		<projector>
-			<IP>192.168.0.108</IP>
+			<IP>192.168.1.104</IP>
 		</projector>
 	</projectors>
 </settings>
