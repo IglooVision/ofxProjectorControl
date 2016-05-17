@@ -61,17 +61,26 @@ class ofxProjectorControl
 
 		//A simple interface for Osc Messages
 		void handleOSCMessage(ofxOscMessage msg);
+
+		//A authentication function for PJLink in case it is needed
+		void authenticatePJLink(string msgRx, ofxTCPClient* tcpClient);
 	
 	private:
 		//Sets up the connections by directly connecting to the projector
 		//It uses RC232 protocol through Ethernet
 		void setupRC232Conenction();
 
+		//Sets up the connections by directly connecting to the projector
+		//It uses PJLink
+		void setupPJLinkConenction();
 
 		ofxXmlSettings			xml;
 		vector<ofxTCPClient*>	projectorConnections;
 		vector<string>			projectorIPs;
 		string					communicationMode;
 		int						port;
+
+		bool					authenticationNeeded;
+		string					password;
 
 };

@@ -24,6 +24,10 @@ void ofxProjectorControl::setupConnection()
 	{
 		setupRC232Conenction();
 	}
+	else if (communicationMode == "PJLink")
+	{
+		setupPJLinkConenction();
+	}
 		
 }
 
@@ -34,7 +38,7 @@ void ofxProjectorControl::setupRC232Conenction()
 	{
 		ofxTCPClient* _tcpClient = new ofxTCPClient();
 		
-		bool connected = _tcpClient->setup(projectorIPs[i], 23);
+		bool connected = _tcpClient->setup(projectorIPs[i], port);
 		
 		//if the connections is not possible then it is not pushed in the vector
 		//When this for loop finishes inside projectorConnections we have all the active connections
@@ -49,7 +53,41 @@ void ofxProjectorControl::setupRC232Conenction()
 	}
 }
 
+void ofxProjectorControl::setupPJLinkConenction()
+{
+	//This is were the vector of connections is created 
+	for (int i = 0; i < projectorIPs.size(); i++)
+	{
+		string msgRx = "";
+		ofxTCPClient* _tcpClient = new ofxTCPClient();
 
+		bool connected = _tcpClient->setup(projectorIPs[i], port, true);
+
+		//if the connections is not possible then it is not pushed in the vector
+		//When this for loop finishes inside projectorConnections we have all the active connections
+		if (!connected)
+		{
+			ofLogNotice() << "Projector " << i << " couldn't connect" << endl;
+		}
+		else
+		{
+			ofLogNotice() << "connection established: " << projectorIPs[i] << ": Number " << i << endl;
+			string response = "";
+			while (msgRx.length() < 8) {
+				msgRx = _tcpClient->receiveRaw();
+			}
+			ofLogNotice() << "received response: " << msgRx << endl;
+			projectorConnections.push_back(_tcpClient);
+		}
+
+		if (authenticationNeeded)
+		{
+			authenticatePJLink(msgRx, _tcpClient);
+		}
+
+		
+	}
+}
 
 void ofxProjectorControl::projector3DActivate(int emitter)
 {
@@ -102,6 +140,13 @@ void ofxProjectorControl::loadXmlSettings(string path)
 		// load the communication port it should be the same for all projectors
 		port = xml.getValue("settings::port", 0);
 
+		authenticationNeeded = ofToBool(xml.getValue("settings::authenticationNeeded", "false"));
+
+		if (authenticationNeeded)
+		{
+			password = xml.getValue("settings::password", "none");
+		}
+
 		// load the IPs
 		xml.pushTag("settings");
 		xml.pushTag("projectors");
@@ -122,6 +167,29 @@ void ofxProjectorControl::loadXmlSettings(string path)
 		ofLogNotice() << "[ERROR] Heartbeart - cannot load heartbeatSettings.xml" << endl;
 	}
 		
+}
+
+void ofxProjectorControl::authenticatePJLink(string msgRx, ofxTCPClient* tcpClient)
+{
+	//string authToken = "";
+
+	////eg. PJLINK 1 604cc14d
+	//if (msgRx[7] == '1') {
+	//	ofLogNotice() << "with authentication" << endl;
+	//	MD5Engine md5;
+	//	md5.reset();
+	//	string hash = msgRx.substr(9, 8);
+	//	ofLogNotice() << hash << endl;
+	//	md5.update(hash + password);
+	//	authToken = DigestEngine::digestToHex(md5.digest());
+	//}
+	//ofLogNotice() << "sending command: " << authToken + command << endl;
+	//tcpClient->sendRaw(authToken + command);
+	//msgRx = "";
+	//while (msgRx.length() < 8) {
+	//	msgRx = tcpClient->receiveRaw();
+	//}
+	//ofLogNotice() << "received response: " << msgRx << endl;
 }
 
 void ofxProjectorControl::handleOSCMessage(ofxOscMessage msg)
