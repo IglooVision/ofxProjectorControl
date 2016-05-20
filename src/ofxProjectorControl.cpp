@@ -18,7 +18,7 @@ ofxProjectorControl::~ofxProjectorControl()
 
 void ofxProjectorControl::setupConnection()
 {
-	loadXmlSettings("ProjectorSettings.xml");
+	
 
 	if (communicationMode == "RC232OverEthernet")
 	{
@@ -78,6 +78,46 @@ void ofxProjectorControl::setupPJLinkConenction()
 			}
 			ofLogNotice() << "received response: " << msgRx << endl;
 			projectorConnections.push_back(_tcpClient);
+
+			string authToken = "";
+
+			//eg. PJLINK 1 604cc14d
+			//if (msgRx[10] == '1') {
+			if (msgRx[10] == '1') {
+				ofLogNotice() << "with authentication" << endl;
+				MD5Engine md5;
+				md5.reset();
+				string hash = msgRx.substr(12, 8);
+				ofLogNotice() << hash << endl;
+				md5.update("admin1:igloo:" + hash );
+				authToken = DigestEngine::digestToHex(md5.digest());
+			}
+			
+		//	string msgSend = "%1POWR 0\r";
+		//	_tcpClient->sendRaw(authToken+msgSend);
+
+			string msgCommand ="%1POWR 0\r";
+			string msgSend="";
+			//cout << "1(" << msgSend << ")" << endl;
+			//printf("String:%s", msgSend);
+			msgSend = authToken + msgCommand;
+			//cout << "2(" << msgSend << ")" << endl;
+			//printf("String:%s", msgSend);
+		//	char test[46];
+		//	strcpy(test, msgSend.c_str());
+		//	printf(test);
+		//	_tcpClient->sendRawBytes(test,41);
+			cout << msgSend << endl;
+			_tcpClient->sendRaw(msgSend);
+
+			msgRx = "";
+			while (msgRx.length() < 4) {
+				msgRx = _tcpClient->receiveRaw();
+			}
+
+			ofLogNotice() << "received response: " << msgRx << endl;
+
+			_tcpClient->close();
 		}
 
 		if (authenticationNeeded)
@@ -135,20 +175,20 @@ void ofxProjectorControl::loadXmlSettings(string path)
 	if (_isLoaded)
 	{
 		// load the mode type in which the application will communicate with the projector
-		communicationMode = xml.getValue("settings:communicationMode", "");
+		communicationMode = xml.getValue("Settings:communicationMode", "");
 
 		// load the communication port it should be the same for all projectors
-		port = xml.getValue("settings::port", 0);
+		port = xml.getValue("Settings::port", 0);
 
-		authenticationNeeded = ofToBool(xml.getValue("settings::authenticationNeeded", "false"));
+		authenticationNeeded = ofToBool(xml.getValue("Settings::authenticationNeeded", "false"));
 
 		if (authenticationNeeded)
 		{
-			password = xml.getValue("settings::password", "none");
+			password = xml.getValue("Settings::password", "igloo");
 		}
 
 		// load the IPs
-		xml.pushTag("settings");
+		xml.pushTag("Settings");
 		xml.pushTag("projectors");
 
 		int numProjectors = xml.getNumTags("projector");

@@ -3,6 +3,14 @@
 #include "ofxNetwork.h"
 #include "ofxXmlSettings.h"
 #include "ofxOSC.h"
+#include "Poco/MD5Engine.h"
+#include "Poco/DigestStream.h"
+#include "Poco/StreamCopier.h"
+
+using Poco::DigestEngine;
+using Poco::MD5Engine;
+using Poco::DigestOutputStream;
+using Poco::StreamCopier;
 
 using namespace std;
 
