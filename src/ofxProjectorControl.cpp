@@ -2,7 +2,7 @@
 
 ofxProjectorControl::ofxProjectorControl()
 {
-	
+	cout << "PROJECTOR CONTROL: class created" << endl;
 }
 
 ofxProjectorControl::~ofxProjectorControl()
@@ -18,7 +18,9 @@ ofxProjectorControl::~ofxProjectorControl()
 
 void ofxProjectorControl::setupConnection()
 {
+	cout << "PROJECTOR CONTROL: Setup" << endl;
 	loadXmlSettings("ProjectorSettings.xml");
+	cout << "PROJECTOR CONTROL: Settings loaded" << endl;
 
 	if (communicationMode == "RC232OverEthernet")
 	{
@@ -29,9 +31,13 @@ void ofxProjectorControl::setupConnection()
 
 void ofxProjectorControl::setupRC232Conenction()
 {
+	cout << "PROJECTOR CONTROL: setupRC232Conenction" << endl;
+
 	//This is were the vector of connections is created 
 	for (int i = 0; i < projectorIPs.size(); i++)
 	{
+		cout << "PROJECTOR CONTROL: connecting to " << projectorIPs[i] << endl;
+
 		ofxTCPClient* _tcpClient = new ofxTCPClient();
 		
 		bool connected = _tcpClient->setup(projectorIPs[i], 23);
@@ -119,7 +125,7 @@ void ofxProjectorControl::loadXmlSettings(string path)
 	}
 	else
 	{
-		ofLogNotice() << "[ERROR] Heartbeart - cannot load heartbeatSettings.xml" << endl;
+		ofLogNotice() << "[ERROR] Projector Control - cannot load settings xml" << endl;
 	}
 		
 }
@@ -127,6 +133,7 @@ void ofxProjectorControl::loadXmlSettings(string path)
 void ofxProjectorControl::handleOSCMessage(ofxOscMessage msg)
 {
 	string oscMsgAddress = msg.getAddress();
+	cout << "PROJECTOR CONTROL: handling osc message " << oscMsgAddress << endl;
 
 	if (oscMsgAddress == "/projector/3DOff")				{ projector3DActivate(ofxProjectorControl::EMITTER_3D_OFF); }
 	else if (oscMsgAddress == "/projector/DLP")				{ projector3DActivate(ofxProjectorControl::EMITTER_DLP_LINK); }
