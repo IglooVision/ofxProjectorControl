@@ -7,6 +7,8 @@
 #include "Poco/DigestStream.h"
 #include "Poco/StreamCopier.h"
 
+#define DEFAULT_KRAMER_IP "192.168.1.38"
+
 using Poco::DigestEngine;
 using Poco::MD5Engine;
 using Poco::DigestOutputStream;
@@ -72,6 +74,9 @@ class ofxProjectorControl
 
 		//A authentication function for PJLink in case it is needed
 		void authenticatePJLink(string msgRx, ofxTCPClient* tcpClient);
+
+		//A function to switch between channels in the Kramer Matrix
+		void switchChannelsKramer();
 	
 	private:
 		//Sets up the connections by directly connecting to the projector
@@ -82,13 +87,22 @@ class ofxProjectorControl
 		//It uses PJLink
 		void setupPJLinkConenction();
 
+		//Sets up the connections by directly connecting to the Kramer matrix
+		//It uses a direct Ethernet connection with the Kramer matrix
+		void setupKramerConnection();
+
 		ofxXmlSettings			xml;
 		vector<ofxTCPClient*>	projectorConnections;
 		vector<string>			projectorIPs;
 		string					communicationMode;
+		ofxTCPClient			kramerConnection;
 		int						port;
+
 
 		bool					authenticationNeeded;
 		string					password;
 
+		string					kramerIP;
+		int						startingChannel;
+		int						numberOfInputs;
 };
