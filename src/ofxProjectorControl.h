@@ -47,24 +47,28 @@ class ofxProjectorControl
 		//This is an abstract layer that gets the Communication Mode and calls the relevant function
 		void setupConnection();
 
+		//This activates the 3D projection and sets the projector in IR - SBS mode.
+		//It is part of the abstract layer and works for different brands as long as the correct brand is specified in Projector Settings xml
+		void projector3DOn();
+
 		//Activates 3D projection
 		//Parameters: 0:Off 1:DLP - Link 2 : IR
-		//This is for Vivitek DU978-WT. It should get abstracted
 		void projector3DActivate(int emitter);
 		
 		//Sets 3D mode 
 		//Parameters: 0:Frame Sequential 1:Top/Bottom 2 : Side-By-Side 3: Frame Packing
-		//This is for Vivitek DU978-WT. It should get abstracted
 		void projector3DMode(int mode);
 
 		//Sets 3D Sync Invert 
 		//Parameters: 0:Off 1:On
-		//This is for Vivitek DU978-WT. It should get abstracted
-		void projector3DSyncIvenrt(int activated);
+		void projector3DSyncInvert(int activated);
 
 		//Closes the projector
-		//This is for Vivitek DU978-WT. It should get abstracted
 		void projectorClose();
+
+		//Open the projector
+		//Only works for Optoma
+		void projectorOpen();
 
 		//Loads the XML settings from ProjectorSettings.xml
 		void loadXmlSettings(string path);
@@ -91,6 +95,48 @@ class ofxProjectorControl
 		//It uses a direct Ethernet connection with the Kramer matrix
 		void setupKramerConnection();
 
+		//Activates 3D projection
+		//Parameters: 0:Off 1:DLP - Link 2 : IR
+		//This is for Vivitek DU978-WT. 
+		void projector3DActivateVivitek(int emitter);
+
+		//Sets 3D mode 
+		//Parameters: 0:Frame Sequential 1:Top/Bottom 2 : Side-By-Side 3: Frame Packing
+		//This is for Vivitek DU978-WT.
+		void projector3DModeVivitek(int mode);
+
+		//Sets 3D Sync Invert 
+		//Parameters: 0:Off 1:On
+		//This is for Vivitek DU978-WT. 
+		void projector3DSyncInvertVivitek(int activated);
+
+		//Closes the projector
+		//This is for Vivitek DU978-WT. 
+		void projectorCloseVivitek();
+
+		//Activates 3D projection
+		//Parameters: 0:Off 1:DLP - Link 2 : IR
+		//This is for Optoma 415. 
+		void projector3DActivateOptoma(int emitter);
+
+		//Sets 3D mode 
+		//Parameters: 0:Frame Sequential 1:Top/Bottom 2 : Side-By-Side 3: Frame Packing
+		//This is for Optoma 415-WT. 
+		void projector3DModeOptoma(int mode);
+
+		//Sets 3D Sync Invert 
+		//Parameters: 0:Off 1:On
+		//This is for Optoma 415. 
+		void projector3DSyncInvertOptoma(int activated);
+
+		//Closes the projector
+		//This is for Optoma 415. 
+		void projectorCloseOptoma();
+
+		//Opens the projector
+		//This is for Optoma 415. 
+		void projectorOpenOptoma();
+
 		ofxXmlSettings			xml;
 		vector<ofxTCPClient*>	projectorConnections;
 		vector<string>			projectorIPs;
@@ -105,4 +151,5 @@ class ofxProjectorControl
 		string					kramerIP;
 		int						startingChannel;
 		int						numberOfInputs;
+		string					projectorBrand;
 };

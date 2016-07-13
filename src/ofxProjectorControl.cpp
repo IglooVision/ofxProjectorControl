@@ -5,6 +5,7 @@ ofxProjectorControl::ofxProjectorControl()
 	cout << "PROJECTOR CONTROL: class created" << endl;
 }
 
+//--------------------------------------------------------------
 ofxProjectorControl::~ofxProjectorControl()
 {
 	//A vector of ofxTCPClient pointers is used that should be deleted here so we avoid memory leaks 
@@ -16,6 +17,7 @@ ofxProjectorControl::~ofxProjectorControl()
 	projectorConnections.clear();
 }
 
+//--------------------------------------------------------------
 void ofxProjectorControl::setupConnection()
 {
 	cout << "PROJECTOR CONTROL: Setup" << endl;
@@ -37,6 +39,7 @@ void ofxProjectorControl::setupConnection()
 		
 }
 
+//--------------------------------------------------------------
 void ofxProjectorControl::setupRC232Conenction()
 {
 	cout << "PROJECTOR CONTROL: setupRC232Conenction" << endl;
@@ -63,6 +66,7 @@ void ofxProjectorControl::setupRC232Conenction()
 	}
 }
 
+//--------------------------------------------------------------
 void ofxProjectorControl::setupKramerConnection()
 {
 	cout << "PROJECTOR CONTROL: setupKramerConnection" << endl;
@@ -81,6 +85,7 @@ void ofxProjectorControl::setupKramerConnection()
 
 }
 
+//--------------------------------------------------------------
 void ofxProjectorControl::setupPJLinkConenction()
 {
 	//This is were the vector of connections is created 
@@ -111,30 +116,26 @@ void ofxProjectorControl::setupPJLinkConenction()
 
 			//eg. PJLINK 1 604cc14d
 			//if (msgRx[10] == '1') {
-			if (msgRx[10] == '1') {
-				ofLogNotice() << "with authentication" << endl;
-				MD5Engine md5;
-				md5.reset();
-				string hash = msgRx.substr(12, 8);
-				ofLogNotice() << hash << endl;
-				md5.update("admin1:igloo:" + hash );
-				authToken = DigestEngine::digestToHex(md5.digest());
-			}
-			
+
+			//if (msgRx[10] == '1') {
+			//	ofLogNotice() << "with authentication" << endl;
+			//	MD5Engine md5;
+			//	md5.reset();
+			//	string hash = msgRx.substr(12, 8);
+			//	ofLogNotice() << hash << endl;
+			//	md5.update("admin1:igloo:" + hash );
+			//	authToken = DigestEngine::digestToHex(md5.digest());
+			//}
+			//
+		
 		//	string msgSend = "%1POWR 0\r";
 		//	_tcpClient->sendRaw(authToken+msgSend);
 
 			string msgCommand ="%1POWR 0\r";
 			string msgSend="";
-			//cout << "1(" << msgSend << ")" << endl;
-			//printf("String:%s", msgSend);
+
 			msgSend = authToken + msgCommand;
-			//cout << "2(" << msgSend << ")" << endl;
-			//printf("String:%s", msgSend);
-		//	char test[46];
-		//	strcpy(test, msgSend.c_str());
-		//	printf(test);
-		//	_tcpClient->sendRawBytes(test,41);
+
 			cout << msgSend << endl;
 			_tcpClient->sendRaw(msgSend);
 
@@ -156,7 +157,72 @@ void ofxProjectorControl::setupPJLinkConenction()
 	}
 }
 
+//Abstract layer function that triggers 3D
+//--------------------------------------------------------------
+void ofxProjectorControl::projector3DOn()
+{
+	projector3DActivate(2);
+	projector3DMode(2);
+}
+
+//Abstract layer functions for different projector brands using RS232 over RJ45 commmunication
+//--------------------------------------------------------------
 void ofxProjectorControl::projector3DActivate(int emitter)
+{
+	if(projectorBrand == "Vivitek")
+	{
+		projector3DActivateVivitek(emitter);
+	}
+	else if (projectorBrand == "Optoma")
+	{
+		projector3DActivateOptoma(emitter);
+	}
+}
+
+void ofxProjectorControl::projector3DMode(int mode)
+{
+	if (projectorBrand == "Vivitek")
+	{
+		projector3DModeVivitek(mode);
+	}
+	else if (projectorBrand == "Optoma")
+	{
+		projector3DModeOptoma(mode);
+	}
+}
+
+void ofxProjectorControl::projector3DSyncInvert(int activated)
+{
+	if (projectorBrand == "Vivitek")
+	{
+		projector3DSyncInvertVivitek(activated);
+	}
+	else if (projectorBrand == "Optoma")
+	{
+		projector3DSyncInvertOptoma(activated);
+	}
+}
+
+void ofxProjectorControl::projectorOpen()
+{
+	projectorOpenOptoma();
+}
+
+void ofxProjectorControl::projectorClose()
+{
+	if (projectorBrand == "Vivitek")
+	{
+		projectorCloseVivitek();
+	}
+	else if (projectorBrand == "Optoma")
+	{
+		projectorCloseOptoma();
+	}
+}
+
+//Implementation functions 3D activate for Vivitek and Optoma. In this the type of emitter is defined (DLP-Link or IR)
+//--------------------------------------------------------------
+void ofxProjectorControl::projector3DActivateVivitek(int emitter)
 {
 	string emmitterString = std::to_string(emitter);
 	string message = "V99S0315"+ emmitterString +"\r\n";
@@ -166,17 +232,75 @@ void ofxProjectorControl::projector3DActivate(int emitter)
 	}
 }
 
-void ofxProjectorControl::projector3DMode(int mode)
+//Optoma doesn't seem to have an off command for the type of 3D emitter
+//So in order to disable 3D we turn the 3D mode to auto 
+//--------------------------------------------------------------
+void ofxProjectorControl::projector3DActivateOptoma(int emitter)
+{
+	string emmitterString = std::to_string(emitter);
+	if (emitter == 1)
+	{
+		emmitterString = "1";
+	}
+	else if (emitter == 2)
+	{
+		emmitterString = "3";
+	}
+	
+	string message = "~00230 " + emmitterString + "\r\n";
+
+	if (emitter == 0)
+	{
+		message = "~00405 0\r\n";
+	}
+	ofLogNotice() << message << endl;
+	for (int i = 0; i < projectorConnections.size(); i++)
+	{
+		projectorConnections[i]->sendRaw(message);
+	}
+
+}
+
+//Implementation functions 3D mode for Vivitek and Optoma. 
+//--------------------------------------------------------------
+void ofxProjectorControl::projector3DModeVivitek(int mode)
 {
 	string modeString = std::to_string(mode);
-	string message = "V99S0317"+ modeString +"\r\n";
-	for (int i=0; i < projectorConnections.size(); i++)
+
+	string message = "V99S0317" + modeString + "\r\n";
+	for (int i = 0; i < projectorConnections.size(); i++)
 	{
 		projectorConnections[i]->sendRaw(message);
 	}
 }
 
-void ofxProjectorControl::projector3DSyncIvenrt(int activated)
+void ofxProjectorControl::projector3DModeOptoma(int mode)
+{
+	string modeString = std::to_string(mode);
+
+	if (mode == 0)
+	{
+		modeString = "3";
+	}
+	else if (mode == 1)
+	{
+		modeString = "2";
+	}
+	else if (mode == 2)
+	{
+		modeString = "1";
+	}
+
+	string message = "~00405 " + modeString + "\r\n";
+	for (int i = 0; i < projectorConnections.size(); i++)
+	{
+		projectorConnections[i]->sendRaw(message);
+	}
+}
+
+//Implementation functions 3D Invert for Vivitek and Optoma. 
+//--------------------------------------------------------------
+void ofxProjectorControl::projector3DSyncInvertVivitek(int activated)
 {
 	string modeString = std::to_string(activated);
 	string message = "V99S0316" + modeString + "\r\n";
@@ -186,7 +310,30 @@ void ofxProjectorControl::projector3DSyncIvenrt(int activated)
 	}
 }
 
-void ofxProjectorControl::projectorClose()
+void ofxProjectorControl::projector3DSyncInvertOptoma(int activated)
+{
+	string activateString = std::to_string(activated);
+	if (activated == 0)
+	{
+		activateString = "1";
+	}
+	else if (activated == 1)
+	{
+		activateString = "0";
+	}
+
+	string message = "~00231 " + activateString + "\r\n";
+
+	ofLogNotice() << message << endl;
+	for (int i = 0; i < projectorConnections.size(); i++)
+	{
+		projectorConnections[i]->sendRaw(message);
+	}
+}
+
+//Implementation functions to close projectors for Vivitek and Optoma.
+//--------------------------------------------------------------
+void ofxProjectorControl::projectorCloseVivitek()
 {
 
 	string message = "V99S0002\r\n";
@@ -196,6 +343,29 @@ void ofxProjectorControl::projectorClose()
 	}
 }
 
+void ofxProjectorControl::projectorCloseOptoma()
+{
+	string message = "~0000 0\r\n";
+	for (int i = 0; i < projectorConnections.size(); i++)
+	{
+		projectorConnections[i]->sendRaw(message);
+	}
+}
+
+//Implementation function to open projectors for Optoma.
+//--------------------------------------------------------------
+void ofxProjectorControl::projectorOpenOptoma()
+{
+	string message = "~0000 0\r\n";
+	for (int i = 0; i < projectorConnections.size(); i++)
+	{
+		projectorConnections[i]->sendRaw(message);
+	}
+}
+
+
+
+//--------------------------------------------------------------
 void ofxProjectorControl::switchChannelsKramer()
 {
 
@@ -213,6 +383,7 @@ void ofxProjectorControl::switchChannelsKramer()
 	bool breakpoint = false;
 }
 
+//--------------------------------------------------------------
 void ofxProjectorControl::loadXmlSettings(string path)
 {
 	bool _isLoaded = xml.load(path);
@@ -221,8 +392,11 @@ void ofxProjectorControl::loadXmlSettings(string path)
 		// load the mode type in which the application will communicate with the projector
 		communicationMode = xml.getValue("Settings:communicationMode", "");
 
+		//load the brand of the projector
+		projectorBrand = xml.getValue("Settings:projectorBrand", "");
+
 		// load the communication port it should be the same for all projectors
-		port = xml.getValue("Settings::port", 0);
+		port = xml.getValue("Settings::port", 23);
 		kramerIP = xml.getValue("Settings::kramerIP", "0");
 		startingChannel = ofToInt(xml.getValue("Settings::startingChannel", "0"));
 		numberOfInputs = ofToInt(xml.getValue("Settings::numberOfInputs", "0"));
@@ -256,6 +430,7 @@ void ofxProjectorControl::loadXmlSettings(string path)
 		
 }
 
+//--------------------------------------------------------------
 void ofxProjectorControl::authenticatePJLink(string msgRx, ofxTCPClient* tcpClient)
 {
 	//string authToken = "";
@@ -279,19 +454,22 @@ void ofxProjectorControl::authenticatePJLink(string msgRx, ofxTCPClient* tcpClie
 	//ofLogNotice() << "received response: " << msgRx << endl;
 }
 
+//--------------------------------------------------------------
 void ofxProjectorControl::handleOSCMessage(ofxOscMessage msg)
 {
 	string oscMsgAddress = msg.getAddress();
 	cout << "PROJECTOR CONTROL: handling osc message " << oscMsgAddress << endl;
 
 	if (oscMsgAddress == "/projector/3DOff")				{ projector3DActivate(ofxProjectorControl::EMITTER_3D_OFF); }
+	else if (oscMsgAddress == "/projector/3DOn")			{ projector3DOn(); }
 	else if (oscMsgAddress == "/projector/DLP")				{ projector3DActivate(ofxProjectorControl::EMITTER_DLP_LINK); }
 	else if (oscMsgAddress == "/projector/IR")				{ projector3DActivate(ofxProjectorControl::EMITTER_IR); }
 	else if (oscMsgAddress == "/projector/FrameSequential")	{ projector3DMode(ofxProjectorControl::MODE_FRAME_SEQUENTIAL); }
 	else if (oscMsgAddress == "/projector/TopBottom")		{ projector3DMode(ofxProjectorControl::MODE_TOP_BOTTOM); }
 	else if (oscMsgAddress == "/projector/SBS")				{ projector3DMode(ofxProjectorControl::MODE_SIDE_BY_SIDE); }
 	else if (oscMsgAddress == "/projector/FramePacking")	{ projector3DMode(ofxProjectorControl::MODE_FRAME_PACKING); }
-	else if (oscMsgAddress == "/projector/InvertOff")		{ projector3DSyncIvenrt(ofxProjectorControl::SYNC_INVERT_OFF); }
-	else if (oscMsgAddress == "/projector/InvertOn")		{ projector3DSyncIvenrt(ofxProjectorControl::SYNC_INVERT_ON); }
+	else if (oscMsgAddress == "/projector/InvertOff")		{ projector3DSyncInvert(ofxProjectorControl::SYNC_INVERT_OFF); }
+	else if (oscMsgAddress == "/projector/InvertOn")		{ projector3DSyncInvert(ofxProjectorControl::SYNC_INVERT_ON); }
 	else if (oscMsgAddress == "/projector/Close")			{ projectorClose(); }
+	else if (oscMsgAddress == "/projector/Open")			{ projectorOpen(); }
 }

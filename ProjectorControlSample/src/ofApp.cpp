@@ -81,11 +81,11 @@ void ofApp::keyReleased(int key){
 	}
 	if (key == 'z')
 	{
-		projectControl.projector3DSyncIvenrt(ofxProjectorControl::SYNC_INVERT_OFF);
+		projectControl.projector3DSyncInvert(ofxProjectorControl::SYNC_INVERT_OFF);
 	}
 	if (key == 'x')
 	{
-		projectControl.projector3DSyncIvenrt(ofxProjectorControl::SYNC_INVERT_ON);
+		projectControl.projector3DSyncInvert(ofxProjectorControl::SYNC_INVERT_ON);
 	}
 	if (key == 'v')
 	{
