@@ -235,23 +235,24 @@ void ofxProjectorControl::projector3DActivateVivitek(int emitter)
 //Optoma doesn't seem to have an off command for the type of 3D emitter
 //So in order to disable 3D we turn the 3D mode to auto 
 //--------------------------------------------------------------
-void ofxProjectorControl::projector3DActivateOptoma(int emitter)
+void ofxProjectorControl::projector3DActivateOptoma(int format)
 {
-	string emmitterString = std::to_string(emitter);
-	if (emitter == 1)
+	string formatString = std::to_string(format);
+	if (format == FORMAT_DLP_LINK)
 	{
-		emmitterString = "1";
+		formatString = OPTOMA_DLP_LINK;
 	}
-	else if (emitter == 2)
+	else if (format == FORMAT_IR)
 	{
-		emmitterString = "3";
+		formatString = OPTOMA_IR;
 	}
 	
-	string message = "~00230 " + emmitterString + "\r\n";
+	string message = "~00230 " + formatString + "\r\n";
 
-	if (emitter == 0)
+	//Optoma doens't have a 3D off option so this is a hack that sets 3d mode to auto which disables 3d 
+	if (format == FORMAT_3D_OFF)
 	{
-		message = "~00405 0\r\n";
+		message = OPTOMA_3D_OFF;
 	}
 	ofLogNotice() << message << endl;
 	for (int i = 0; i < projectorConnections.size(); i++)
@@ -278,17 +279,17 @@ void ofxProjectorControl::projector3DModeOptoma(int mode)
 {
 	string modeString = std::to_string(mode);
 
-	if (mode == 0)
+	if (mode == MODE_FRAME_SEQUENTIAL)
 	{
-		modeString = "3";
+		modeString = OPTOMA_FRAME_SEQUENTIAL;
 	}
-	else if (mode == 1)
+	else if (mode == MODE_TOP_BOTTOM)
 	{
-		modeString = "2";
+		modeString = OPTOMA_TOP_BOTTOM;
 	}
-	else if (mode == 2)
+	else if (mode == MODE_SIDE_BY_SIDE)
 	{
-		modeString = "1";
+		modeString = OPTOMA_SIDE_BY_SIDE;
 	}
 
 	string message = "~00405 " + modeString + "\r\n";
@@ -313,13 +314,13 @@ void ofxProjectorControl::projector3DSyncInvertVivitek(int activated)
 void ofxProjectorControl::projector3DSyncInvertOptoma(int activated)
 {
 	string activateString = std::to_string(activated);
-	if (activated == 0)
+	if (activated == SYNC_INVERT_OFF)
 	{
-		activateString = "1";
+		activateString = OPTOMA_SYNC_INVERT_OFF;
 	}
-	else if (activated == 1)
+	else if (activated == SYNC_INVERT_ON)
 	{
-		activateString = "0";
+		activateString = OPTOMA_SYNC_INVERT_ON;
 	}
 
 	string message = "~00231 " + activateString + "\r\n";
@@ -356,7 +357,7 @@ void ofxProjectorControl::projectorCloseOptoma()
 //--------------------------------------------------------------
 void ofxProjectorControl::projectorOpenOptoma()
 {
-	string message = "~0000 0\r\n";
+	string message = "~0000 1\r\n";
 	for (int i = 0; i < projectorConnections.size(); i++)
 	{
 		projectorConnections[i]->sendRaw(message);
@@ -460,10 +461,10 @@ void ofxProjectorControl::handleOSCMessage(ofxOscMessage msg)
 	string oscMsgAddress = msg.getAddress();
 	cout << "PROJECTOR CONTROL: handling osc message " << oscMsgAddress << endl;
 
-	if (oscMsgAddress == "/projector/3DOff")				{ projector3DActivate(ofxProjectorControl::EMITTER_3D_OFF); }
+	if (oscMsgAddress == "/projector/3DOff")				{ projector3DActivate(ofxProjectorControl::FORMAT_3D_OFF); }
 	else if (oscMsgAddress == "/projector/3DOn")			{ projector3DOn(); }
-	else if (oscMsgAddress == "/projector/DLP")				{ projector3DActivate(ofxProjectorControl::EMITTER_DLP_LINK); }
-	else if (oscMsgAddress == "/projector/IR")				{ projector3DActivate(ofxProjectorControl::EMITTER_IR); }
+	else if (oscMsgAddress == "/projector/DLP")				{ projector3DActivate(ofxProjectorControl::FORMAT_DLP_LINK); }
+	else if (oscMsgAddress == "/projector/IR")				{ projector3DActivate(ofxProjectorControl::FORMAT_IR); }
 	else if (oscMsgAddress == "/projector/FrameSequential")	{ projector3DMode(ofxProjectorControl::MODE_FRAME_SEQUENTIAL); }
 	else if (oscMsgAddress == "/projector/TopBottom")		{ projector3DMode(ofxProjectorControl::MODE_TOP_BOTTOM); }
 	else if (oscMsgAddress == "/projector/SBS")				{ projector3DMode(ofxProjectorControl::MODE_SIDE_BY_SIDE); }

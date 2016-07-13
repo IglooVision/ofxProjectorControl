@@ -8,6 +8,14 @@
 #include "Poco/StreamCopier.h"
 
 #define DEFAULT_KRAMER_IP "192.168.1.38"
+#define OPTOMA_FRAME_SEQUENTIAL "3"
+#define OPTOMA_TOP_BOTTOM "2"
+#define OPTOMA_SIDE_BY_SIDE "1"
+#define OPTOMA_SYNC_INVERT_ON "0"
+#define OPTOMA_SYNC_INVERT_OFF "1"
+#define OPTOMA_3D_OFF "~00405 0\r\n"
+#define OPTOMA_DLP_LINK "1"
+#define OPTOMA_IR "3"
 
 using Poco::DigestEngine;
 using Poco::MD5Engine;
@@ -22,9 +30,9 @@ class ofxProjectorControl
 	public:
 
 		enum EmitterSettings {
-			EMITTER_3D_OFF,
-			EMITTER_DLP_LINK,
-			EMITTER_IR
+			FORMAT_3D_OFF,
+			FORMAT_DLP_LINK,
+			FORMAT_IR
 		};
 
 		enum ModeSettings {
@@ -53,7 +61,7 @@ class ofxProjectorControl
 
 		//Activates 3D projection
 		//Parameters: 0:Off 1:DLP - Link 2 : IR
-		void projector3DActivate(int emitter);
+		void projector3DActivate(int format);
 		
 		//Sets 3D mode 
 		//Parameters: 0:Frame Sequential 1:Top/Bottom 2 : Side-By-Side 3: Frame Packing
@@ -98,7 +106,7 @@ class ofxProjectorControl
 		//Activates 3D projection
 		//Parameters: 0:Off 1:DLP - Link 2 : IR
 		//This is for Vivitek DU978-WT. 
-		void projector3DActivateVivitek(int emitter);
+		void projector3DActivateVivitek(int format);
 
 		//Sets 3D mode 
 		//Parameters: 0:Frame Sequential 1:Top/Bottom 2 : Side-By-Side 3: Frame Packing
@@ -117,7 +125,7 @@ class ofxProjectorControl
 		//Activates 3D projection
 		//Parameters: 0:Off 1:DLP - Link 2 : IR
 		//This is for Optoma 415. 
-		void projector3DActivateOptoma(int emitter);
+		void projector3DActivateOptoma(int format);
 
 		//Sets 3D mode 
 		//Parameters: 0:Frame Sequential 1:Top/Bottom 2 : Side-By-Side 3: Frame Packing
