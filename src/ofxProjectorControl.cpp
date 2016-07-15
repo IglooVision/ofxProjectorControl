@@ -168,6 +168,15 @@ void ofxProjectorControl::projector3DOn()
 	projector3DMode(2);
 }
 
+
+//Projector Control of 3D convienience method using XML values
+//--------------------------------------------------------------
+void ofxProjectorControl::setProjector3D(bool state) {
+	if (state) projector3DOn();
+	else projector3DOff();
+}
+
+
 //Abstract layer functions for different projector brands using RS232 over RJ45 commmunication
 //--------------------------------------------------------------
 void ofxProjectorControl::projector3DActivate(int emitter)

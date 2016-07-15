@@ -59,6 +59,9 @@ class ofxProjectorControl
 		//It is part of the abstract layer and works for different brands as long as the correct brand is specified in Projector Settings xml
 		void projector3DOn();
 
+		//This convienience method sets the projectors 3D state using the XML values for IR/DLPlink and SBS/Above and Below/FrameSequential
+		void setProjector3D(bool state);
+
 		//Activates 3D projection
 		//Parameters: 0:Off 1:DLP - Link 2 : IR
 		void projector3DActivate(int format);
