@@ -59,6 +59,10 @@ class ofxProjectorControl
 		//It is part of the abstract layer and works for different brands as long as the correct brand is specified in Projector Settings xml
 		void projector3DOn();
 
+		//This deactivates the 3D projection.
+		//It is part of the abstract layer and works for different brands as long as the correct brand is specified in Projector Settings xml
+		void projector3DOff();
+
 		//Activates 3D projection
 		//Parameters: 0:Off 1:DLP - Link 2 : IR
 		void projector3DActivate(int format);
@@ -160,4 +164,6 @@ class ofxProjectorControl
 		int						startingChannel;
 		int						numberOfInputs;
 		string					projectorBrand;
+		int						default3DFormat;
+		int						default3DMode;
 };

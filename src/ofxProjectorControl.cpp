@@ -161,8 +161,15 @@ void ofxProjectorControl::setupPJLinkConenction()
 //--------------------------------------------------------------
 void ofxProjectorControl::projector3DOn()
 {
-	projector3DActivate(2);
-	projector3DMode(2);
+	projector3DActivate(default3DFormat);
+	projector3DMode(default3DMode);
+}
+
+//Abstract layer function that turns 3D off
+//--------------------------------------------------------------
+void ofxProjectorControl::projector3DOff()
+{
+	projector3DActivate(FORMAT_3D_OFF);
 }
 
 //Abstract layer functions for different projector brands using RS232 over RJ45 commmunication
@@ -401,6 +408,9 @@ void ofxProjectorControl::loadXmlSettings(string path)
 		kramerIP = xml.getValue("Settings::kramerIP", "0");
 		startingChannel = ofToInt(xml.getValue("Settings::startingChannel", "0"));
 		numberOfInputs = ofToInt(xml.getValue("Settings::numberOfInputs", "0"));
+		default3DFormat = ofToInt(xml.getValue("Settings::default3DFormat", "3"));
+		default3DMode = ofToInt(xml.getValue("Settings::default3DMode", "3"));
+
 
 		authenticationNeeded = ofToBool(xml.getValue("Settings::authenticationNeeded", "false"));
 

@@ -1,12 +1,17 @@
-<settings>
-    <communicationMode>RC232OverEthernet</communicationMode>
+<Settings>
+	<communicationMode>RC232OverEthernet</communicationMode>
+	<projectorBrand>Optoma</projectorBrand>
+	<default3DFormat>2</default3DFormat>
+	<default3DMode>2</default3DMode>
 	<port>23</port>
+	<authenticationNeeded>false</authenticationNeeded>
+	<password>none</password>
 	<projectors>
 		<projector>
-			<IP>192.168.1.100</IP>
+			<IP>192.168.1.182</IP>
 		</projector>
 		<projector>
-			<IP>192.168.1.101</IP>
+			<IP>192.168.1.110</IP>
 		</projector>
 		<projector>
 			<IP>192.168.1.102</IP>
@@ -18,4 +23,7 @@
 			<IP>192.168.1.104</IP>
 		</projector>
 	</projectors>
-</settings>
+	<kramerIP>192.168.15.167</kramerIP>
+	<startingChannel>1</startingChannel>
+	<numberOfInputs>1</numberOfInputs>
+</Settings>
