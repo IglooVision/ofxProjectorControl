@@ -88,6 +88,8 @@ void ofxProjectorControl::setupKramerConnection()
 //--------------------------------------------------------------
 void ofxProjectorControl::setupPJLinkConenction()
 {
+	cout << "Setting up PJLink connection" << endl;
+
 	//This is were the vector of connections is created 
 	for (int i = 0; i < projectorIPs.size(); i++)
 	{
@@ -107,6 +109,7 @@ void ofxProjectorControl::setupPJLinkConenction()
 			ofLogNotice() << "connection established: " << projectorIPs[i] << ": Number " << i << endl;
 			string response = "";
 			while (msgRx.length() < 8) {
+				cout << "msgRx: " << msgRx << endl;
 				msgRx = _tcpClient->receiveRaw();
 			}
 			ofLogNotice() << "received response: " << msgRx << endl;
@@ -171,6 +174,15 @@ void ofxProjectorControl::projector3DOff()
 {
 	projector3DActivate(FORMAT_3D_OFF);
 }
+
+
+//Projector Control of 3D convienience method using XML values
+//--------------------------------------------------------------
+void ofxProjectorControl::setProjector3D(bool state) {
+	if (state) projector3DOn();
+	else projector3DOff();
+}
+
 
 //Abstract layer functions for different projector brands using RS232 over RJ45 commmunication
 //--------------------------------------------------------------
@@ -395,16 +407,20 @@ void ofxProjectorControl::switchChannelsKramer()
 void ofxProjectorControl::loadXmlSettings(string path)
 {
 	bool _isLoaded = xml.load(path);
+	cout << "Loading " << path << endl;
+
 	if (_isLoaded)
 	{
 		// load the mode type in which the application will communicate with the projector
 		communicationMode = xml.getValue("Settings:communicationMode", "");
+		cout << "Mode: " << communicationMode << endl;
 
 		//load the brand of the projector
 		projectorBrand = xml.getValue("Settings:projectorBrand", "");
 
 		// load the communication port it should be the same for all projectors
 		port = xml.getValue("Settings::port", 23);
+		cout << "Port: " << ofToString(port) << endl;
 		kramerIP = xml.getValue("Settings::kramerIP", "0");
 		startingChannel = ofToInt(xml.getValue("Settings::startingChannel", "0"));
 		numberOfInputs = ofToInt(xml.getValue("Settings::numberOfInputs", "0"));
@@ -413,6 +429,7 @@ void ofxProjectorControl::loadXmlSettings(string path)
 
 
 		authenticationNeeded = ofToBool(xml.getValue("Settings::authenticationNeeded", "false"));
+		cout << "Auth Needed: " << ofToString(authenticationNeeded) << endl;
 
 		if (authenticationNeeded)
 		{
@@ -436,7 +453,9 @@ void ofxProjectorControl::loadXmlSettings(string path)
 	}
 	else
 	{
-		ofLogNotice() << "[ERROR] Projector Control - cannot load settings xml" << endl;
+		string errMsg = "[ERROR] Projector Control - cannot load settings xml";
+		cout << errMsg << endl;
+		ofLogNotice() << errMsg << endl;
 	}
 		
 }
