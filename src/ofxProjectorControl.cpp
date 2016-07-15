@@ -61,6 +61,8 @@ void ofxProjectorControl::setupRC232Conenction()
 
 void ofxProjectorControl::setupPJLinkConenction()
 {
+	cout << "Setting up PJLink connection" << endl;
+
 	//This is were the vector of connections is created 
 	for (int i = 0; i < projectorIPs.size(); i++)
 	{
@@ -80,6 +82,7 @@ void ofxProjectorControl::setupPJLinkConenction()
 			ofLogNotice() << "connection established: " << projectorIPs[i] << ": Number " << i << endl;
 			string response = "";
 			while (msgRx.length() < 8) {
+				cout << "msgRx: " << msgRx << endl;
 				msgRx = _tcpClient->receiveRaw();
 			}
 			ofLogNotice() << "received response: " << msgRx << endl;
@@ -178,15 +181,20 @@ void ofxProjectorControl::projectorClose()
 void ofxProjectorControl::loadXmlSettings(string path)
 {
 	bool _isLoaded = xml.load(path);
+	cout << "Loading " << path << endl;
+
 	if (_isLoaded)
 	{
 		// load the mode type in which the application will communicate with the projector
 		communicationMode = xml.getValue("Settings:communicationMode", "");
+		cout << "Mode: " << communicationMode << endl;
 
 		// load the communication port it should be the same for all projectors
-		port = xml.getValue("Settings::port", 0);
+		port = ofToInt(xml.getValue("Settings::port", "0"));
+		cout << "Port: " << ofToString(port) << endl;
 
 		authenticationNeeded = ofToBool(xml.getValue("Settings::authenticationNeeded", "false"));
+		cout << "Auth Needed: " << ofToString(authenticationNeeded) << endl;
 
 		if (authenticationNeeded)
 		{
@@ -210,7 +218,9 @@ void ofxProjectorControl::loadXmlSettings(string path)
 	}
 	else
 	{
-		ofLogNotice() << "[ERROR] Projector Control - cannot load settings xml" << endl;
+		string errMsg = "[ERROR] Projector Control - cannot load settings xml";
+		cout << errMsg << endl;
+		ofLogNotice() << errMsg << endl;
 	}
 		
 }
