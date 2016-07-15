@@ -53,15 +53,15 @@ void ofApp::keyReleased(int key){
 		
 	if (key == 'q')
 	{
-		projectControl.projector3DActivate(ofxProjectorControl::EMITTER_3D_OFF);
+		projectControl.projector3DActivate(ofxProjectorControl::FORMAT_3D_OFF);
 	}
 	if (key == 'w')
 	{
-		projectControl.projector3DActivate(ofxProjectorControl::EMITTER_DLP_LINK);
+		projectControl.projector3DActivate(ofxProjectorControl::FORMAT_DLP_LINK);
 	}
 	if (key == 'e')
 	{
-		projectControl.projector3DActivate(ofxProjectorControl::EMITTER_IR);
+		projectControl.projector3DActivate(ofxProjectorControl::FORMAT_IR);
 	}
 	if (key == 'a')
 	{
@@ -81,11 +81,11 @@ void ofApp::keyReleased(int key){
 	}
 	if (key == 'z')
 	{
-		projectControl.projector3DSyncIvenrt(ofxProjectorControl::SYNC_INVERT_OFF);
+		projectControl.projector3DSyncInvert(ofxProjectorControl::SYNC_INVERT_OFF);
 	}
 	if (key == 'x')
 	{
-		projectControl.projector3DSyncIvenrt(ofxProjectorControl::SYNC_INVERT_ON);
+		projectControl.projector3DSyncInvert(ofxProjectorControl::SYNC_INVERT_ON);
 	}
 	if (key == 'v')
 	{
