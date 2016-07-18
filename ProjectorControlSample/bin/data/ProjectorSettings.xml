@@ -1,8 +1,8 @@
 <Settings>
 	<communicationMode>RC232OverEthernet</communicationMode>
 	<projectorBrand>Optoma</projectorBrand>
-	<default3DFormat>2</default3DFormat>
-	<default3DMode>2</default3DMode>
+	<default3DFormat>IR</default3DFormat>
+	<default3DMode>SIDE_BY_SIDE</default3DMode>
 	<port>23</port>
 	<authenticationNeeded>false</authenticationNeeded>
 	<password>none</password>

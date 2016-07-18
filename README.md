@@ -9,17 +9,34 @@ There is a basic implementation for communication using the PJlink protocol (thi
 
 #XML Tags
 
+<Settings> The root element
+
 <communicationMode> - Pick the type of connection RC232OverEthernet, PJLink, KramerSwitch
+
 <projectorBrand> - Pick the brand Optoma and Vivitek at the moment
-<default3DFormat> - Pick the default3DFormat for projector3DOn Parameters: 0:Off 1:DLP - Link 2 : IR
-<default3DMode> - Pick the default3DMode for projector3DOn Parameters: 0:Frame Sequential 1:Top/Bottom 2 : Side-By-Side 3: Frame Packing
+
+<default3DFormat> - Pick the default3DFormat for projector3DOn Parameters: 3D_OFF,  DLP_LINK, IR
+
+<default3DMode> - Pick the default3DMode for projector3DOn Parameters: FRAME_SEQUENTIAL, TOP_BOTTOM, SIDE_BY_SIDE, FRAME_PACKING
+
 <port> - The communication port that will be used
+
 <authenticationNeeded> - If authentication is needed for the PJLink is not working at the moment
+
 <password> - The password for PJLink authentication is not working at the moment
+
 <projectors> - The Projectors IPs
+
 <kramerIP> - The ip for communication with a Kramer switch
+
 <startingChannel> - Not used
+
 <numberOfInputs> - Not used
+
+#Versions
+
+1.1 Added static function logEverywhere to print both in a log file and in the console. The lof file needs to be specified in the main app using ofLogToFile.
+Changed the <default3DFormat> and <default3DMode> to use strings instead of integers as an input 
 
 #Author
 

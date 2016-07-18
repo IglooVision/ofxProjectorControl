@@ -29,7 +29,9 @@ class ofxProjectorControl
 
 	public:
 
-		enum EmitterSettings {
+		static void logEverywhere(string logMessage);
+
+		enum FormatSettings {
 			FORMAT_3D_OFF,
 			FORMAT_DLP_LINK,
 			FORMAT_IR
@@ -151,6 +153,10 @@ class ofxProjectorControl
 		//Opens the projector
 		//This is for Optoma 415. 
 		void projectorOpenOptoma();
+
+		void convertToEnumFormatSettings(string formatSetting);
+
+		void convertToEnumModeSettings(string modeSetting);
 
 		ofxXmlSettings			xml;
 		vector<ofxTCPClient*>	projectorConnections;

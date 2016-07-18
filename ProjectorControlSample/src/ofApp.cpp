@@ -3,6 +3,8 @@
 //--------------------------------------------------------------
 void ofApp::setup()
 {
+	ofLogToFile("myTest.txt", true);
+
 	projectControl.setupConnection();	
 
 	receiver.setup(PORT);

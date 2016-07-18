@@ -1,8 +1,15 @@
 #include "ofxProjectorControl.h"
 
+void ofxProjectorControl::logEverywhere(string logMessage)
+{
+	cout << logMessage << endl;
+
+	ofLogNotice() << logMessage << endl;
+}
+
 ofxProjectorControl::ofxProjectorControl()
 {
-	cout << "PROJECTOR CONTROL: class created" << endl;
+	logEverywhere("PROJECTOR CONTROL: class created");
 }
 
 //--------------------------------------------------------------
@@ -20,9 +27,9 @@ ofxProjectorControl::~ofxProjectorControl()
 //--------------------------------------------------------------
 void ofxProjectorControl::setupConnection()
 {
-	cout << "PROJECTOR CONTROL: Setup" << endl;
+		
 	loadXmlSettings("ProjectorSettings.xml");
-	cout << "PROJECTOR CONTROL: Settings loaded" << endl;
+	logEverywhere("PROJECTOR CONTROL: Settings loaded");
 
 	if (communicationMode == "RC232OverEthernet")
 	{
@@ -42,13 +49,11 @@ void ofxProjectorControl::setupConnection()
 //--------------------------------------------------------------
 void ofxProjectorControl::setupRC232Conenction()
 {
-	cout << "PROJECTOR CONTROL: setupRC232Conenction" << endl;
-
+	logEverywhere("PROJECTOR CONTROL: setupRC232Conenction");
 	//This is were the vector of connections is created 
 	for (int i = 0; i < projectorIPs.size(); i++)
 	{
-		cout << "PROJECTOR CONTROL: connecting to " << projectorIPs[i] << endl;
-
+		logEverywhere("PROJECTOR CONTROL: connecting to " + projectorIPs[i]);
 		ofxTCPClient* _tcpClient = new ofxTCPClient();
 		
 		bool connected = _tcpClient->setup(projectorIPs[i], port);
@@ -57,7 +62,7 @@ void ofxProjectorControl::setupRC232Conenction()
 		//When this for loop finishes inside projectorConnections we have all the active connections
 		if (!connected)
 		{
-			ofLogNotice() << "Projector "  << i << " couldn't connect" << endl;
+			logEverywhere("Projector couldn't connect: " + ofToString(i));
 		}
 		else
 		{
@@ -88,8 +93,8 @@ void ofxProjectorControl::setupKramerConnection()
 //--------------------------------------------------------------
 void ofxProjectorControl::setupPJLinkConenction()
 {
-	cout << "Setting up PJLink connection" << endl;
-
+//	cout << "Setting up PJLink connection" << endl;
+	logEverywhere("Setting up PJLink connection");
 	//This is were the vector of connections is created 
 	for (int i = 0; i < projectorIPs.size(); i++)
 	{
@@ -102,17 +107,19 @@ void ofxProjectorControl::setupPJLinkConenction()
 		//When this for loop finishes inside projectorConnections we have all the active connections
 		if (!connected)
 		{
-			ofLogNotice() << "Projector " << i << " couldn't connect" << endl;
+			logEverywhere("Projector couldn't connect" + i);
 		}
 		else
 		{
-			ofLogNotice() << "connection established: " << projectorIPs[i] << ": Number " << i << endl;
+			logEverywhere("Connection established: " + projectorIPs[i]);
+			logEverywhere("Number " + ofToString(i));
 			string response = "";
 			while (msgRx.length() < 8) {
 				cout << "msgRx: " << msgRx << endl;
 				msgRx = _tcpClient->receiveRaw();
 			}
 			ofLogNotice() << "received response: " << msgRx << endl;
+			logEverywhere("Received response: " + msgRx);
 			projectorConnections.push_back(_tcpClient);
 
 			string authToken = "";
@@ -147,7 +154,7 @@ void ofxProjectorControl::setupPJLinkConenction()
 				msgRx = _tcpClient->receiveRaw();
 			}
 
-			ofLogNotice() << "received response: " << msgRx << endl;
+			logEverywhere("received response: " + msgRx);
 
 			_tcpClient->close();
 		}
@@ -175,14 +182,12 @@ void ofxProjectorControl::projector3DOff()
 	projector3DActivate(FORMAT_3D_OFF);
 }
 
-
 //Projector Control of 3D convienience method using XML values
 //--------------------------------------------------------------
 void ofxProjectorControl::setProjector3D(bool state) {
 	if (state) projector3DOn();
 	else projector3DOff();
 }
-
 
 //Abstract layer functions for different projector brands using RS232 over RJ45 commmunication
 //--------------------------------------------------------------
@@ -273,7 +278,7 @@ void ofxProjectorControl::projector3DActivateOptoma(int format)
 	{
 		message = OPTOMA_3D_OFF;
 	}
-	ofLogNotice() << message << endl;
+	logEverywhere(message);
 	for (int i = 0; i < projectorConnections.size(); i++)
 	{
 		projectorConnections[i]->sendRaw(message);
@@ -344,7 +349,7 @@ void ofxProjectorControl::projector3DSyncInvertOptoma(int activated)
 
 	string message = "~00231 " + activateString + "\r\n";
 
-	ofLogNotice() << message << endl;
+	logEverywhere(message);
 	for (int i = 0; i < projectorConnections.size(); i++)
 	{
 		projectorConnections[i]->sendRaw(message);
@@ -383,8 +388,6 @@ void ofxProjectorControl::projectorOpenOptoma()
 	}
 }
 
-
-
 //--------------------------------------------------------------
 void ofxProjectorControl::switchChannelsKramer()
 {
@@ -407,29 +410,28 @@ void ofxProjectorControl::switchChannelsKramer()
 void ofxProjectorControl::loadXmlSettings(string path)
 {
 	bool _isLoaded = xml.load(path);
-	cout << "Loading " << path << endl;
-
+	logEverywhere("Loading " + path);
 	if (_isLoaded)
 	{
 		// load the mode type in which the application will communicate with the projector
 		communicationMode = xml.getValue("Settings:communicationMode", "");
-		cout << "Mode: " << communicationMode << endl;
+		logEverywhere("Mode: " + communicationMode);
 
 		//load the brand of the projector
 		projectorBrand = xml.getValue("Settings:projectorBrand", "");
 
 		// load the communication port it should be the same for all projectors
 		port = xml.getValue("Settings::port", 23);
-		cout << "Port: " << ofToString(port) << endl;
+		logEverywhere("Port: " + ofToString(port));
 		kramerIP = xml.getValue("Settings::kramerIP", "0");
 		startingChannel = ofToInt(xml.getValue("Settings::startingChannel", "0"));
 		numberOfInputs = ofToInt(xml.getValue("Settings::numberOfInputs", "0"));
-		default3DFormat = ofToInt(xml.getValue("Settings::default3DFormat", "3"));
-		default3DMode = ofToInt(xml.getValue("Settings::default3DMode", "3"));
-
+		string tempDefault3DFormat = xml.getValue("Settings::default3DFormat", "IR");
+		convertToEnumFormatSettings(tempDefault3DFormat);
+		string tempDefault3DMode = xml.getValue("Settings::default3DMode", "SIDE_BY_SIDE");
+		convertToEnumModeSettings(tempDefault3DMode);
 
 		authenticationNeeded = ofToBool(xml.getValue("Settings::authenticationNeeded", "false"));
-		cout << "Auth Needed: " << ofToString(authenticationNeeded) << endl;
 
 		if (authenticationNeeded)
 		{
@@ -454,8 +456,7 @@ void ofxProjectorControl::loadXmlSettings(string path)
 	else
 	{
 		string errMsg = "[ERROR] Projector Control - cannot load settings xml";
-		cout << errMsg << endl;
-		ofLogNotice() << errMsg << endl;
+		logEverywhere(errMsg);
 	}
 		
 }
@@ -502,4 +503,40 @@ void ofxProjectorControl::handleOSCMessage(ofxOscMessage msg)
 	else if (oscMsgAddress == "/projector/InvertOn")		{ projector3DSyncInvert(ofxProjectorControl::SYNC_INVERT_ON); }
 	else if (oscMsgAddress == "/projector/Close")			{ projectorClose(); }
 	else if (oscMsgAddress == "/projector/Open")			{ projectorOpen(); }
+}
+
+void ofxProjectorControl::convertToEnumFormatSettings(string formatSetting)
+{
+	if (formatSetting == "3D_OFF")
+	{
+		default3DFormat = FORMAT_3D_OFF;
+	}
+	if (formatSetting == "DLP_LINK")
+	{
+		default3DFormat = FORMAT_DLP_LINK;
+	}
+	if (formatSetting == "IR")
+	{
+		default3DFormat = FORMAT_IR;
+	}
+}
+
+void ofxProjectorControl::convertToEnumModeSettings(string modeSetting)
+{
+	if (modeSetting == "FRAME_SEQUENTIAL")
+	{
+		default3DMode = MODE_FRAME_SEQUENTIAL;
+	}
+	if (modeSetting == "TOP_BOTTOM")
+	{
+		default3DMode = MODE_TOP_BOTTOM;
+	}
+	if (modeSetting == "SIDE_BY_SIDE")
+	{
+		default3DMode = MODE_SIDE_BY_SIDE;
+	}
+	if (modeSetting == "FRAME_PACKING")
+	{
+		default3DMode = MODE_FRAME_PACKING;
+	}
 }
