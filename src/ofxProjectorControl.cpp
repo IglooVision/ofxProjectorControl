@@ -16,12 +16,12 @@ ofxProjectorControl::ofxProjectorControl()
 ofxProjectorControl::~ofxProjectorControl()
 {
 	//A vector of ofxTCPClient pointers is used that should be deleted here so we avoid memory leaks 
-	for (int i = 0; i < projectorConnections.size(); i++)
+	for (int i = 0; i < projectors.size(); i++)
 	{
-		delete (projectorConnections[i]);
-		projectorConnections[i] = NULL;
+		projectors[i]->connection.close();
+		delete (projectors[i]);
 	}
-	projectorConnections.clear();
+	projectors.clear();
 }
 
 //--------------------------------------------------------------
@@ -49,26 +49,10 @@ void ofxProjectorControl::setupConnection()
 //--------------------------------------------------------------
 void ofxProjectorControl::setupRC232Conenction()
 {
+	// This method is now depreciated and the connection is tested and made on each sending of a command to handle connection dropouts
+	// TODO: Test each connection here and add in a flag to stop trying to connect to missing projectors on each command if they wern't availiable at startup
+
 	logEverywhere("PROJECTOR CONTROL: setupRC232Conenction");
-	//This is were the vector of connections is created 
-	for (int i = 0; i < projectorIPs.size(); i++)
-	{
-		logEverywhere("PROJECTOR CONTROL: connecting to " + projectorIPs[i]);
-		ofxTCPClient* _tcpClient = new ofxTCPClient();
-		
-		bool connected = _tcpClient->setup(projectorIPs[i], port);
-		
-		//if the connections is not possible then it is not pushed in the vector
-		//When this for loop finishes inside projectorConnections we have all the active connections
-		if (!connected)
-		{
-			logEverywhere("Projector couldn't connect: " + ofToString(i));
-		}
-		else
-		{
-			projectorConnections.push_back(_tcpClient);
-		}		
-	}
 }
 
 //--------------------------------------------------------------
@@ -96,12 +80,11 @@ void ofxProjectorControl::setupPJLinkConenction()
 //	cout << "Setting up PJLink connection" << endl;
 	logEverywhere("Setting up PJLink connection");
 	//This is were the vector of connections is created 
-	for (int i = 0; i < projectorIPs.size(); i++)
+	for (int i = 0; i < projectors.size(); i++)
 	{
 		string msgRx = "";
-		ofxTCPClient* _tcpClient = new ofxTCPClient();
 
-		bool connected = _tcpClient->setup(projectorIPs[i], port, true);
+		bool connected = projectors[i]->connection.setup(projectors[i]->ip, projectors[i]->port, true);
 
 		//if the connections is not possible then it is not pushed in the vector
 		//When this for loop finishes inside projectorConnections we have all the active connections
@@ -111,16 +94,15 @@ void ofxProjectorControl::setupPJLinkConenction()
 		}
 		else
 		{
-			logEverywhere("Connection established: " + projectorIPs[i]);
+			logEverywhere("Connection established: " + projectors[i]->ip);
 			logEverywhere("Number " + ofToString(i));
 			string response = "";
 			while (msgRx.length() < 8) {
 				cout << "msgRx: " << msgRx << endl;
-				msgRx = _tcpClient->receiveRaw();
+				msgRx = projectors[i]->connection.receiveRaw();
 			}
 			ofLogNotice() << "received response: " << msgRx << endl;
 			logEverywhere("Received response: " + msgRx);
-			projectorConnections.push_back(_tcpClient);
 
 			string authToken = "";
 
@@ -147,23 +129,23 @@ void ofxProjectorControl::setupPJLinkConenction()
 			msgSend = authToken + msgCommand;
 
 			cout << msgSend << endl;
-			_tcpClient->sendRaw(msgSend);
+			projectors[i]->connection.sendRaw(msgSend);
 
 			msgRx = "";
 			while (msgRx.length() < 4) {
-				msgRx = _tcpClient->receiveRaw();
+				msgRx = projectors[i]->connection.receiveRaw();
 			}
 
 			logEverywhere("received response: " + msgRx);
 
-			_tcpClient->close();
-		}
+			projectors[i]->connection.close();
 
-		if (authenticationNeeded)
-		{
-			authenticatePJLink(msgRx, _tcpClient);
-		}
-		
+			if (authenticationNeeded)
+			{
+				authenticatePJLink(msgRx, &projectors[i]->connection);
+			}
+
+		}		
 	}
 }
 
@@ -250,10 +232,7 @@ void ofxProjectorControl::projector3DActivateVivitek(int emitter)
 {
 	string emmitterString = std::to_string(emitter);
 	string message = "V99S0315"+ emmitterString +"\r\n";
-	for (int i=0; i < projectorConnections.size(); i++)
-	{
-		projectorConnections[i]->sendRaw(message);
-	}
+	sendSerialCommand(message);
 }
 
 //Optoma doesn't seem to have an off command for the type of 3D emitter
@@ -279,11 +258,7 @@ void ofxProjectorControl::projector3DActivateOptoma(int format)
 		message = OPTOMA_3D_OFF;
 	}
 	logEverywhere(message);
-	for (int i = 0; i < projectorConnections.size(); i++)
-	{
-		projectorConnections[i]->sendRaw(message);
-	}
-
+	sendSerialCommand(message);
 }
 
 //Implementation functions 3D mode for Vivitek and Optoma. 
@@ -291,12 +266,8 @@ void ofxProjectorControl::projector3DActivateOptoma(int format)
 void ofxProjectorControl::projector3DModeVivitek(int mode)
 {
 	string modeString = std::to_string(mode);
-
 	string message = "V99S0317" + modeString + "\r\n";
-	for (int i = 0; i < projectorConnections.size(); i++)
-	{
-		projectorConnections[i]->sendRaw(message);
-	}
+	sendSerialCommand(message);
 }
 
 void ofxProjectorControl::projector3DModeOptoma(int mode)
@@ -317,10 +288,7 @@ void ofxProjectorControl::projector3DModeOptoma(int mode)
 	}
 
 	string message = "~00405 " + modeString + "\r\n";
-	for (int i = 0; i < projectorConnections.size(); i++)
-	{
-		projectorConnections[i]->sendRaw(message);
-	}
+	sendSerialCommand(message);
 }
 
 //Implementation functions 3D Invert for Vivitek and Optoma. 
@@ -329,10 +297,7 @@ void ofxProjectorControl::projector3DSyncInvertVivitek(int activated)
 {
 	string modeString = std::to_string(activated);
 	string message = "V99S0316" + modeString + "\r\n";
-	for (int i=0; i < projectorConnections.size(); i++)
-	{
-		projectorConnections[i]->sendRaw(message);
-	}
+	sendSerialCommand(message);
 }
 
 void ofxProjectorControl::projector3DSyncInvertOptoma(int activated)
@@ -350,10 +315,7 @@ void ofxProjectorControl::projector3DSyncInvertOptoma(int activated)
 	string message = "~00231 " + activateString + "\r\n";
 
 	logEverywhere(message);
-	for (int i = 0; i < projectorConnections.size(); i++)
-	{
-		projectorConnections[i]->sendRaw(message);
-	}
+	sendSerialCommand(message);
 }
 
 //Implementation functions to close projectors for Vivitek and Optoma.
@@ -362,19 +324,13 @@ void ofxProjectorControl::projectorCloseVivitek()
 {
 
 	string message = "V99S0002\r\n";
-	for (int i=0; i < projectorConnections.size(); i++)
-	{
-		projectorConnections[i]->sendRaw(message);
-	}
+	sendSerialCommand(message);
 }
 
 void ofxProjectorControl::projectorCloseOptoma()
 {
 	string message = "~0000 0\r\n";
-	for (int i = 0; i < projectorConnections.size(); i++)
-	{
-		projectorConnections[i]->sendRaw(message);
-	}
+	sendSerialCommand(message);
 }
 
 //Implementation function to open projectors for Optoma.
@@ -382,10 +338,7 @@ void ofxProjectorControl::projectorCloseOptoma()
 void ofxProjectorControl::projectorOpenOptoma()
 {
 	string message = "~0000 1\r\n";
-	for (int i = 0; i < projectorConnections.size(); i++)
-	{
-		projectorConnections[i]->sendRaw(message);
-	}
+	sendSerialCommand(message);
 }
 
 //--------------------------------------------------------------
@@ -427,8 +380,11 @@ void ofxProjectorControl::loadXmlSettings(string path)
 		startingChannel = ofToInt(xml.getValue("Settings::startingChannel", "0"));
 		numberOfInputs = ofToInt(xml.getValue("Settings::numberOfInputs", "0"));
 		string tempDefault3DFormat = xml.getValue("Settings::default3DFormat", "IR");
+		logEverywhere("3D Format: " + tempDefault3DFormat);
 		convertToEnumFormatSettings(tempDefault3DFormat);
 		string tempDefault3DMode = xml.getValue("Settings::default3DMode", "SIDE_BY_SIDE");
+		logEverywhere("3D Mode: " + tempDefault3DMode);
+
 		convertToEnumModeSettings(tempDefault3DMode);
 
 		authenticationNeeded = ofToBool(xml.getValue("Settings::authenticationNeeded", "false"));
@@ -443,11 +399,16 @@ void ofxProjectorControl::loadXmlSettings(string path)
 		xml.pushTag("projectors");
 
 		int numProjectors = xml.getNumTags("projector");
+		projectors.clear();
+
 		for (int i = 0; i< numProjectors; i++) 
 		{
+			Projector * projector = new Projector();			
 			xml.pushTag("projector", i);
 			string _IP = xml.getValue("IP", "fail");
-			projectorIPs.push_back(_IP);
+			projector->ip = _IP;
+			projector->port = port;
+			projectors.push_back(projector);
 			xml.popTag(); // pop projector i
 		}
 		xml.popTag(); // pop projectors
@@ -539,4 +500,25 @@ void ofxProjectorControl::convertToEnumModeSettings(string modeSetting)
 	{
 		default3DMode = MODE_FRAME_PACKING;
 	}
+}
+
+
+void ofxProjectorControl::sendSerialCommand(string command) {
+	for (int projectorNum = 0; projectorNum < projectors.size(); projectorNum++) sendSerialCommand(command, projectorNum);
+}
+
+void ofxProjectorControl::sendSerialCommand(string command, int projectorNum) {
+	sendSerialCommand(command, projectors[projectorNum]);
+}
+
+void ofxProjectorControl::sendSerialCommand(string command, Projector* projector) {
+	bool connected = projector->connection.isConnected();
+
+	if (!connected) {
+		logEverywhere("PROJECTOR CONTROL: connecting to " + projector->ip);
+		connected = projector->connection.setup(projector->ip, projector->port);			
+		if (!connected) logEverywhere("ERROR: Projector couldn't connect");
+	}
+
+	if (connected) projector->connection.sendRaw(command);
 }

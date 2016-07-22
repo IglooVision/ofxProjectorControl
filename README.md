@@ -35,6 +35,8 @@ There is a basic implementation for communication using the PJlink protocol (thi
 
 #Versions
 
+1.1.1 Change to test connections (and reconnect) on sending of messages to handle optoma projector dropping connection after a timeout
+
 1.1 Added static function logEverywhere to print both in a log file and in the console. The lof file needs to be specified in the main app using ofLogToFile.
 Changed the <default3DFormat> and <default3DMode> to use strings instead of integers as an input 
 

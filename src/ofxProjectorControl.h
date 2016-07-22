@@ -24,6 +24,14 @@ using Poco::StreamCopier;
 
 using namespace std;
 
+// TODO: make each projector store its 3d signal format and mode so we can use different projector types/modes
+struct Projector {
+	string ip;
+	ofxTCPClient connection;
+	int port;
+};
+
+
 class ofxProjectorControl
 {
 
@@ -154,13 +162,20 @@ class ofxProjectorControl
 		//This is for Optoma 415. 
 		void projectorOpenOptoma();
 
+		//Take a string from the config file and converts it to the prper enum type
 		void convertToEnumFormatSettings(string formatSetting);
 
+		//Take a string from the config file and converts it to the prper enum type
 		void convertToEnumModeSettings(string modeSetting);
 
+
+		void sendSerialCommand(string command);
+		void sendSerialCommand(string command, int projectorNum);
+		void sendSerialCommand(string command, Projector* projector);
+
+
 		ofxXmlSettings			xml;
-		vector<ofxTCPClient*>	projectorConnections;
-		vector<string>			projectorIPs;
+		vector<Projector*>		projectors;
 		string					communicationMode;
 		ofxTCPClient			kramerConnection;
 		int						port;
