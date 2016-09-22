@@ -5,7 +5,7 @@ Basic interface for Vivitek and Optoma projectors to activate 3D, select 3D mode
 
 It uses RS232 command control for LAN/RJ45 interface.
 
-There is a basic implementation for communication using the PJlink protocol (this part of the code uses the relevant code from https://github.com/nullboundary/ofxPJControl ) and 
+There is a basic implementation for communication using the PJlink protocol (this part of the code uses the relevant code from https://github.com/nullboundary/ofxPJControl )
 
 #XML Tags
 
