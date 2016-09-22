@@ -39,10 +39,6 @@ void ofxProjectorControl::setupConnection()
 	{
 		setupPJLinkConenction();
 	}
-	else if (communicationMode == "KramerSwitch")
-	{
-		setupKramerConnection();
-	}
 		
 }
 
@@ -67,28 +63,11 @@ void ofxProjectorControl::setupRC232Conenction()
 		else
 		{
 			projectorConnections.push_back(_tcpClient);
-		}		
+		}	
+
 	}
 }
 
-//--------------------------------------------------------------
-void ofxProjectorControl::setupKramerConnection()
-{
-	cout << "PROJECTOR CONTROL: setupKramerConnection" << endl;
-
-	//This is were the vector of connections is created 
-	cout << "PROJECTOR CONTROL: connecting to " << kramerIP << endl;
-		
-	bool connected = kramerConnection.setup(kramerIP, port);
-
-	//if the connections is not possible then it is not pushed in the vector
-	//When this for loop finishes inside projectorConnections we have all the active connections
-	if (!connected)
-	{
-		ofLogNotice() << "Kramer couldn't connect" << endl;
-	}
-
-}
 
 //--------------------------------------------------------------
 void ofxProjectorControl::setupPJLinkConenction()
@@ -386,24 +365,6 @@ void ofxProjectorControl::projectorOpenOptoma()
 	{
 		projectorConnections[i]->sendRaw(message);
 	}
-}
-
-//--------------------------------------------------------------
-void ofxProjectorControl::switchChannelsKramer()
-{
-
-	int fromChannelHex = startingChannel + 128;
-	int toChannelHex   = startingChannel +  128;
-
-	int command[4] = { 0x01, 0x81, 0x81, 0x81 };
-
-//	bool send = kramerConnection.sendRawBytes((char*)command, sizeof(command));
-
-//	bool send = kramerConnection.sendRaw("01818181");
-
-	bool send = kramerConnection.sendRaw("#PRST-RCL 2\r\n");
-
-	bool breakpoint = false;
 }
 
 //--------------------------------------------------------------

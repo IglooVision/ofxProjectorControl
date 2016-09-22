@@ -5,13 +5,13 @@ Basic interface for Vivitek and Optoma projectors to activate 3D, select 3D mode
 
 It uses RS232 command control for LAN/RJ45 interface.
 
-There is a basic implementation for communication using the PJlink protocol (this part of the code uses the relevant code from https://github.com/nullboundary/ofxPJControl ) and a basic test implementation for the control of a Kramer Matrix
+There is a basic implementation for communication using the PJlink protocol (this part of the code uses the relevant code from https://github.com/nullboundary/ofxPJControl ) 
 
 #XML Tags
 
 <Settings> The root element
 
-<communicationMode> - Pick the type of connection RC232OverEthernet, PJLink, KramerSwitch
+<communicationMode> - Pick the type of connection RC232OverEthernet, PJLink
 
 <projectorBrand> - Pick the brand Optoma and Vivitek at the moment
 
@@ -27,13 +27,9 @@ There is a basic implementation for communication using the PJlink protocol (thi
 
 <projectors> - The Projectors IPs
 
-<kramerIP> - The ip for communication with a Kramer switch
-
-<startingChannel> - Not used
-
-<numberOfInputs> - Not used
-
 #Versions
+
+1.2 Removed the Kramer matrix control. This would be a different addon
 
 1.1 Added static function logEverywhere to print both in a log file and in the console. The lof file needs to be specified in the main app using ofLogToFile.
 Changed the <default3DFormat> and <default3DMode> to use strings instead of integers as an input 
