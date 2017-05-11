@@ -249,6 +249,10 @@ void ofxProjectorControl::projector3DActivateOptoma(int format)
 	{
 		formatString = OPTOMA_IR;
 	}
+	else if (format == FORMAT_VESA)
+	{
+		formatString = OPTOMA_VESA;
+	}
 	
 	string message = "~00230 " + formatString + "\r\n";
 
@@ -472,13 +476,17 @@ void ofxProjectorControl::convertToEnumFormatSettings(string formatSetting)
 	{
 		default3DFormat = FORMAT_3D_OFF;
 	}
-	if (formatSetting == "DLP_LINK")
+	else if (formatSetting == "DLP_LINK")
 	{
 		default3DFormat = FORMAT_DLP_LINK;
 	}
-	if (formatSetting == "IR")
+	else if (formatSetting == "IR")
 	{
 		default3DFormat = FORMAT_IR;
+	}
+	else if (formatSetting == "VESA")
+	{
+		default3DFormat = FORMAT_VESA;
 	}
 }
 

@@ -15,7 +15,8 @@
 #define OPTOMA_SYNC_INVERT_OFF "1"
 #define OPTOMA_3D_OFF "~00405 0\r\n"
 #define OPTOMA_DLP_LINK "1"
-#define OPTOMA_IR "3"
+#define OPTOMA_VESA "3"
+#define OPTOMA_IR "2"
 
 using Poco::DigestEngine;
 using Poco::MD5Engine;
@@ -42,7 +43,8 @@ class ofxProjectorControl
 		enum FormatSettings {
 			FORMAT_3D_OFF,
 			FORMAT_DLP_LINK,
-			FORMAT_IR
+			FORMAT_IR,
+			FORMAT_VESA
 		};
 
 		enum ModeSettings {

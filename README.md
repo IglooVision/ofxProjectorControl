@@ -15,7 +15,7 @@ There is a basic implementation for communication using the PJlink protocol (thi
 
 <projectorBrand> - Pick the brand Optoma and Vivitek at the moment
 
-<default3DFormat> - Pick the default3DFormat for projector3DOn Parameters: 3D_OFF,  DLP_LINK, IR
+<default3DFormat> - Pick the default3DFormat for projector3DOn Parameters: 3D_OFF, DLP_LINK, IR, VESA
 
 <default3DMode> - Pick the default3DMode for projector3DOn Parameters: FRAME_SEQUENTIAL, TOP_BOTTOM, SIDE_BY_SIDE, FRAME_PACKING
 
@@ -34,6 +34,8 @@ There is a basic implementation for communication using the PJlink protocol (thi
 <numberOfInputs> - Not used
 
 #Versions
+
+1.1.2 Add VESA to optoma 3d options
 
 1.1.1 Change to test connections (and reconnect) on sending of messages to handle optoma projector dropping connection after a timeout
 
