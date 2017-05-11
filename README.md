@@ -5,7 +5,7 @@ Basic interface for Vivitek and Optoma projectors to activate 3D, select 3D mode
 
 It uses RS232 command control for LAN/RJ45 interface.
 
-There is a basic implementation for communication using the PJlink protocol (this part of the code uses the relevant code from https://github.com/nullboundary/ofxPJControl ) and a basic test implementation for the control of a Kramer Matrix
+There is a basic implementation for communication using the PJlink protocol (this part of the code uses the relevant code from https://github.com/nullboundary/ofxPJControl )
 
 #XML Tags
 
@@ -27,15 +27,11 @@ There is a basic implementation for communication using the PJlink protocol (thi
 
 <projectors> - The Projectors IPs
 
-<kramerIP> - The ip for communication with a Kramer switch
-
-<startingChannel> - Not used
-
-<numberOfInputs> - Not used
-
 #Versions
 
-1.1.2 Add VESA to optoma 3d options
+1.2.1 Add VESA to optoma 3d options
+
+1.2 Removed Kramer control functionality
 
 1.1.1 Change to test connections (and reconnect) on sending of messages to handle optoma projector dropping connection after a timeout
 

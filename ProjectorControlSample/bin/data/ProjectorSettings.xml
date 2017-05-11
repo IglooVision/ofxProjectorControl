@@ -23,7 +23,4 @@
 			<IP>192.168.1.104</IP>
 		</projector>
 	</projectors>
-	<kramerIP>192.168.15.167</kramerIP>
-	<startingChannel>1</startingChannel>
-	<numberOfInputs>1</numberOfInputs>
 </Settings>

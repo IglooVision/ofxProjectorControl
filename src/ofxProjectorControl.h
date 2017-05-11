@@ -106,9 +106,6 @@ class ofxProjectorControl
 		//A authentication function for PJLink in case it is needed
 		void authenticatePJLink(string msgRx, ofxTCPClient* tcpClient);
 
-		//A function to switch between channels in the Kramer Matrix
-		void switchChannelsKramer();
-	
 	private:
 		//Sets up the connections by directly connecting to the projector
 		//It uses RC232 protocol through Ethernet
@@ -117,10 +114,6 @@ class ofxProjectorControl
 		//Sets up the connections by directly connecting to the projector
 		//It uses PJLink
 		void setupPJLinkConenction();
-
-		//Sets up the connections by directly connecting to the Kramer matrix
-		//It uses a direct Ethernet connection with the Kramer matrix
-		void setupKramerConnection();
 
 		//Activates 3D projection
 		//Parameters: 0:Off 1:DLP - Link 2 : IR
